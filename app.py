@@ -1,5 +1,6 @@
 import os
 import json
+from sheets_api import add_report_to_sheet
 from datetime import datetime
 from flask import (
     Flask, render_template, request,
@@ -169,24 +170,44 @@ def report_step3(apt_id):
             photo_file.save(save_path)
             photo_filename = final_name
 
-        # יצירת הדיווח הסופי
-        report_id = create_report_id(data)
+        # להכין תיאור מלא שמשלב פריט + תיאור חופשי
+        item = draft.get("item", "")
+        description = draft.get("description", "")
+        full_description = description
+        if item:
+            if description:
+                full_description = f"{item} - {description}"
+            else:
+                full_description = item
+
+        # שמירת הדיווח בגוגל שיטס
+        report_id = add_report_to_sheet(
+            apartment_id=apt_id,
+            room=draft["room"],
+            issue_type=draft["issue_type"],
+            description=full_description,
+            priority=draft.get("priority", "normal"),
+            image_url=""  # בשלב הזה בלי קישור לתמונה – נטפל בזה בהמשך
+        )
+
         now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+        # יצירת הדיווח המקומי (JSON) – כדי שהדשבורד הקיים ימשיך לעבוד
         report = {
             "id": report_id,
             "created_at": now_str,
             "room": draft["room"],
-            "issue_type": draft["issue_type"],   # broken / missing / other
-            "item": draft.get("item", ""),
-            "description": draft.get("description", ""),
+            "issue_type": draft["issue_type"],
+            "item": item,
+            "description": description,
             "priority": draft.get("priority", "normal"),
-            "photo_filename": photo_filename,    # יכול להיות None
-            "status": "received",               # התחלה: התקבל
+            "photo_filename": photo_filename,   # עדיין נשמר מקומית בינתיים
+            "status": "received",
         }
 
         data["apartments"][apt_id]["reports"].append(report)
         save_data(data)
+
 
         # לנקות את הדראפט
         session.pop("report_draft", None)

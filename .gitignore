@@ -1,2 +1,6 @@
 google_api/
 *.json
+Notes.txt
+__pycache__/
+*.pyc
+
