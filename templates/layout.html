@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}ניהול דירות{% endblock %}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 16px;
+            background-color: #f7f7f7;
+        }
+        header {
+            margin-bottom: 16px;
+        }
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 0 4px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 4px;
+        }
+        select, input[type="text"], textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        input[type="file"] {
+            margin-top: 8px;
+        }
+        button {
+            margin-top: 16px;
+            padding: 10px 16px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            color: #fff;
+            border-radius: 4px;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border: none;
+            color: #fff;
+            border-radius: 4px;
+        }
+        .btn-small {
+            padding: 4px 8px;
+            font-size: 13px;
+        }
+        .type-buttons {
+            margin-top: 8px;
+        }
+        .type-button {
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 4px 2px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .type-button input {
+            display: none;
+        }
+        .type-button.selected {
+            border-color: #007bff;
+            font-weight: bold;
+        }
+        .flash {
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+        }
+        .flash-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .flash-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+        th, td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: right;
+            vertical-align: top;
+        }
+        th {
+            background-color: #f0f0f0;
+        }
+        .status-label {
+            font-weight: bold;
+        }
+        .status-received {
+            color: #6c757d;
+        }
+        .status-in_progress {
+            color: #fd7e14;
+        }
+        .status-done {
+            color: #28a745;
+        }
+        img.report-photo {
+            max-width: 120px;
+            max-height: 120px;
+            display: block;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+<header class="card">
+    <div class="top-nav">
+        <div>
+            <a href="{{ url_for('index') }}">בחירת דירה</a>
+        </div>
+        <div>
+            ניהול דירות – דיווח תקלות וחוסרים
+        </div>
+    </div>
+</header>
+
+<div>
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">
+              {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+</div>
+
+{% block content %}{% endblock %}
+
+<script>
+    // פונקציה לסימון ויזואלי של כפתור סוג בעיה
+    document.addEventListener("DOMContentLoaded", function () {
+        const buttons = document.querySelectorAll(".type-button");
+        buttons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const name = btn.querySelector("input")?.getAttribute("name");
+                if (!name) return;
+                const sameGroup = document.querySelectorAll('.type-button input[name="' + name + '"]');
+                sameGroup.forEach(inp => inp.parentElement.classList.remove("selected"));
+                btn.classList.add("selected");
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

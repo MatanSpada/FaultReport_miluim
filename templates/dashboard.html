@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+{% block title %}דירה {{ apartment_id }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>{{ apartment.name }}</h2>
+    <p>
+        <a class="btn-primary" style="padding:8px 12px; border-radius:4px; color:#fff;"
+           href="{{ url_for('report_step1', apt_id=apartment_id) }}">
+            + דיווח תקלה / חוסר חדש
+        </a>
+    </p>
+
+    {% if reports %}
+        <h3>דיווחים קיימים</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>תאריך</th>
+                <th>אזור</th>
+                <th>פריט</th>
+                <th>סוג</th>
+                <th>דחיפות</th>
+                <th>סטטוס</th>
+                <th>תיאור</th>
+                <th>תמונה</th>
+                <th>עדכון סטטוס</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for r in reports %}
+                <tr>
+                    <td>{{ r.id }}</td>
+                    <td>{{ r.created_at }}</td>
+                    <td>{{ r.room }}</td>
+                    <td>{{ r.item }}</td>
+                    <td>
+                        {% if r.issue_type == "broken" %}משהו התקלקל
+                        {% elif r.issue_type == "missing" %}משהו חסר
+                        {% else %}אחר{% endif %}
+                    </td>
+                    <td>
+                        {% if r.priority == "high" %}
+                            <span style="color:red; font-weight:bold;">קריטי</span>
+                        {% else %}
+                            <span>רגיל</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% set status_class = "status-" + r.status %}
+                        <span class="status-label {{ status_class }}">
+                            {% if r.status == "received" %}התקבל
+                            {% elif r.status == "in_progress" %}בטיפול
+                            {% elif r.status == "done" %}טופל
+                            {% else %}{{ r.status }}{% endif %}
+                        </span>
+                    </td>
+                    <td style="max-width:200px;">{{ r.description }}</td>
+                    <td>
+                        {% if r.photo_filename %}
+                            <img class="report-photo"
+                                 src="{{ url_for('static', filename='uploads/' ~ r.photo_filename) }}"
+                                 alt="תמונה">
+                        {% else %}
+                            אין
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form action="{{ url_for('set_status', apt_id=apartment_id, report_id=r.id) }}"
+                              method="post">
+                            <select name="status">
+                                <option value="received" {% if r.status == "received" %}selected{% endif %}>התקבל</option>
+                                <option value="in_progress" {% if r.status == "in_progress" %}selected{% endif %}>בטיפול</option>
+                                <option value="done" {% if r.status == "done" %}selected{% endif %}>טופל</option>
+                            </select>
+                            <button class="btn-small btn-secondary" type="submit">עדכן</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>אין עדיין דיווחים לדירה זו.</p>
+    {% endif %}
+</div>
+{% endblock %}
