@@ -9,7 +9,7 @@
         {% for apt_id, apt in apartments.items() %}
             <li>
                 <a href="{{ url_for('apartment_dashboard', apt_id=apt_id) }}">
-                    {{ apt.name }} (מספר: {{ apt_id }})
+                    {{ apt.name }}
                 </a>
             </li>
         {% endfor %}

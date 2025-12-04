@@ -59,9 +59,12 @@
                     <td style="max-width:200px;">{{ r.description }}</td>
                     <td>
                         {% if r.photo_filename %}
-                            <img class="report-photo"
-                                 src="{{ url_for('static', filename='uploads/' ~ r.photo_filename) }}"
-                                 alt="תמונה">
+                            <a href="{{ url_for('static', filename='uploads/' ~ r.photo_filename) }}"
+                            target="_blank">
+                                <img class="report-photo"
+                                    src="{{ url_for('static', filename='uploads/' ~ r.photo_filename) }}"
+                                    alt="תמונה">
+                            </a>
                         {% else %}
                             אין
                         {% endif %}

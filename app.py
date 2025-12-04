@@ -29,9 +29,18 @@ def load_data():
         data = {
             "last_report_id": 0,
             "apartments": {
-                "1": {"name": "דירה 1", "reports": []},
-                "2": {"name": "דירה 2", "reports": []},
-                "3": {"name": "דירה 3", "reports": []},
+                "1": {"name": "רותם", "reports": []},
+                "2": {"name": "דפנה", "reports": []},
+                "3": {"name": "ארז", "reports": []},
+                "4": {"name": "אורן", "reports": []},
+                "5": {"name": "מוריה", "reports": []},
+                "6": {"name": "זקיף מוריה", "reports": []},
+                "7": {"name": "אגוז", "reports": []},
+                "8": {"name": "מלונית אגוז", "reports": []},
+                "9": {"name": "ורד", "reports": []},
+                "10": {"name": "מלונית ורד", "reports": []},
+                "11": {"name": "אקליפטוס", "reports": []},
+                "12": {"name": "זקיף אקליפטוס", "reports": []},
             }
         }
         save_data(data)
