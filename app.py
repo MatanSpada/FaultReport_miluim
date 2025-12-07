@@ -1,5 +1,4 @@
 import os
-import json
 from sheets_api import add_report_to_sheet
 from datetime import datetime
 from flask import (
@@ -7,12 +6,14 @@ from flask import (
     redirect, url_for, session, flash
 )
 from werkzeug.utils import secure_filename
+from sheets_api import get_reports_by_apartment
+from apartments import APARTMENTS
+
 
 # -------------------------
 # הגדרות בסיסיות
 # -------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_FILE = os.path.join(BASE_DIR, "data.json")
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -23,77 +24,38 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16MB לקובץ
 
 # -------------------------
-# פונקציות עזר לנתונים
-# -------------------------
-def load_data():
-    if not os.path.exists(DATA_FILE):
-        data = {
-            "last_report_id": 0,
-            "apartments": {
-                "1": {"name": "רותם", "reports": []},
-                "2": {"name": "דפנה", "reports": []},
-                "3": {"name": "ארז", "reports": []},
-                "4": {"name": "אורן", "reports": []},
-                "5": {"name": "מוריה", "reports": []},
-                "6": {"name": "זקיף מוריה", "reports": []},
-                "7": {"name": "אגוז", "reports": []},
-                "8": {"name": "מלונית אגוז", "reports": []},
-                "9": {"name": "ורד", "reports": []},
-                "10": {"name": "מלונית ורד", "reports": []},
-                "11": {"name": "אקליפטוס", "reports": []},
-                "12": {"name": "זקיף אקליפטוס", "reports": []},
-            }
-        }
-        save_data(data)
-        return data
-
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-
-def save_data(data):
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-
-
-def create_report_id(data):
-    data["last_report_id"] += 1
-    return data["last_report_id"]
-
-
-# -------------------------
 # ראוטים
 # -------------------------
 
 @app.route("/")
 def index():
     """דף בחירת דירה"""
-    data = load_data()
-    apartments = data["apartments"]
-    return render_template("index.html", apartments=apartments)
+    return render_template("index.html", apartments=APARTMENTS)
 
 
 @app.route("/apartment/<apt_id>")
 def apartment_dashboard(apt_id):
     """דשבורד לדירה ספציפית"""
-    data = load_data()
-    apartments = data["apartments"]
 
-    if apt_id not in apartments:
+    if apt_id not in APARTMENTS:
         flash("דירה לא קיימת", "error")
         return redirect(url_for("index"))
 
-    apt = apartments[apt_id]
-    # למיין דיווחים מהחדש לישן
-    reports = sorted(apt["reports"], key=lambda r: r["id"], reverse=True)
+    apt_name = APARTMENTS[apt_id]
+    reports = get_reports_by_apartment(apt_id)
 
-    return render_template("dashboard.html", apartment_id=apt_id, apartment=apt, reports=reports)
+    return render_template(
+        "dashboard.html",
+        apartment_id=apt_id,
+        apartment_name=apt_name,
+        reports=reports
+    )
+
 
 
 @app.route("/apartment/<apt_id>/report/new/step1", methods=["GET", "POST"])
 def report_step1(apt_id):
-    data = load_data()
-    if apt_id not in data["apartments"]:
+    if apt_id not in APARTMENTS:
         flash("דירה לא קיימת", "error")
         return redirect(url_for("index"))
 
@@ -117,8 +79,7 @@ def report_step1(apt_id):
 
 @app.route("/apartment/<apt_id>/report/new/step2", methods=["GET", "POST"])
 def report_step2(apt_id):
-    data = load_data()
-    if apt_id not in data["apartments"]:
+    if apt_id not in APARTMENTS:
         flash("דירה לא קיימת", "error")
         return redirect(url_for("index"))
 
@@ -146,8 +107,7 @@ def report_step2(apt_id):
 
 @app.route("/apartment/<apt_id>/report/new/step3", methods=["GET", "POST"])
 def report_step3(apt_id):
-    data = load_data()
-    if apt_id not in data["apartments"]:
+    if apt_id not in APARTMENTS:
         flash("דירה לא קיימת", "error")
         return redirect(url_for("index"))
 
@@ -190,25 +150,6 @@ def report_step3(apt_id):
             image_url=""  # בשלב הזה בלי קישור לתמונה – נטפל בזה בהמשך
         )
 
-        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        # יצירת הדיווח המקומי (JSON) – כדי שהדשבורד הקיים ימשיך לעבוד
-        report = {
-            "id": report_id,
-            "created_at": now_str,
-            "room": draft["room"],
-            "issue_type": draft["issue_type"],
-            "item": item,
-            "description": description,
-            "priority": draft.get("priority", "normal"),
-            "photo_filename": photo_filename,   # עדיין נשמר מקומית בינתיים
-            "status": "received",
-        }
-
-        data["apartments"][apt_id]["reports"].append(report)
-        save_data(data)
-
-
         # לנקות את הדראפט
         session.pop("report_draft", None)
 
@@ -218,31 +159,25 @@ def report_step3(apt_id):
     return render_template("report_step3.html", apartment_id=apt_id, draft=draft)
 
 
-# אופציונלי – עדכון סטטוס (כרגע רק דוגמה פשוטה)
 @app.route("/apartment/<apt_id>/report/<int:report_id>/set_status", methods=["POST"])
 def set_status(apt_id, report_id):
     new_status = request.form.get("status")
-    data = load_data()
 
-    if apt_id not in data["apartments"]:
+    if apt_id not in APARTMENTS:
         flash("דירה לא קיימת", "error")
         return redirect(url_for("index"))
 
-    apt = data["apartments"][apt_id]
-    found = False
-    for r in apt["reports"]:
-        if r["id"] == report_id:
-            r["status"] = new_status
-            found = True
-            break
+    from sheets_api import update_report_status
 
-    if found:
-        save_data(data)
-        flash("סטטוס עודכן", "success")
+    ok = update_report_status(report_id, new_status)
+
+    if ok:
+        flash("סטטוס עודכן!", "success")
     else:
-        flash("דיווח לא נמצא", "error")
+        flash("שגיאה בעדכון הסטטוס", "error")
 
     return redirect(url_for("apartment_dashboard", apt_id=apt_id))
+
 
 
 if __name__ == "__main__":

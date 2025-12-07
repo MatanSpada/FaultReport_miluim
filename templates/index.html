@@ -6,13 +6,13 @@
     <h2>בחר דירה</h2>
     <p>בחר דירה כדי להיכנס לדשבורד ולדווח על תקלות או חוסרים.</p>
     <ul>
-        {% for apt_id, apt in apartments.items() %}
-            <li>
-                <a href="{{ url_for('apartment_dashboard', apt_id=apt_id) }}">
-                    {{ apt.name }}
-                </a>
-            </li>
-        {% endfor %}
+    {% for apt_id, apt_name in apartments.items() %}
+        <li>
+        <a href="{{ url_for('apartment_dashboard', apt_id=apt_id) }}">
+            {{ apt_name }}
+        </a>
+        </li>
+    {% endfor %}
     </ul>
 </div>
 {% endblock %}

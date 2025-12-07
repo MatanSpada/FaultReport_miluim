@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="card">
-    <h2>{{ apartment.name }}</h2>
+    <h2>{{ apartment_name }}</h2>
     <p>
         <a class="btn-primary" style="padding:8px 12px; border-radius:4px; color:#fff;"
            href="{{ url_for('report_step1', apt_id=apartment_id) }}">
