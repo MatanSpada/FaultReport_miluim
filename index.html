@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>בחירת דירה</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background:#f5f5f5;
+            margin:0;
+            padding:20px;
+        }
+        header {
+            background:#fff;
+            padding:15px;
+            margin-bottom:20px;
+            border-radius:8px;
+            box-shadow:0 0 5px rgba(0,0,0,0.15);
+        }
+        a { color:#0066cc; text-decoration:none; }
+        a:hover { text-decoration:underline; }
+
+        .card {
+            background:#fff;
+            padding:20px;
+            border-radius:10px;
+            box-shadow:0 0 5px rgba(0,0,0,0.2);
+        }
+
+        ul {
+            list-style:none;
+            padding:0;
+        }
+        li {
+            margin-bottom:10px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="index.html">דף הבית</a> |
+    <a href="all_reports.html">כל התקלות</a>
+</header>
+
+<div class="card">
+    <h2>בחר דירה</h2>
+    <p>בחר דירה כדי להיכנס לדשבורד ולדווח על תקלות או חוסרים.</p>
+
+    <ul id="apt-list">
+        <li>טוען...</li>
+    </ul>
+</div>
+
+<script>
+const API_BASE = "https://script.google.com/macros/s/AKfycbwWqG5XO7MBvVAbUUeA8Pibad2HY3JncwMpWCulsE2-ybtP86yzZ0342aATRvLRVAT7/exec";
+
+async function loadApartments() {
+    const ul = document.getElementById("apt-list");
+
+    try {
+        // לוקחים את כל הדיווחים, ומוצאים מזה רשימת דירות ייחודית
+        const res = await fetch(API_BASE + "?action=get_all_reports");
+        const data = await res.json();
+
+        if (!data.ok) {
+            throw new Error(data.error || "API error");
+        }
+
+        const reports = data.reports || [];
+        const uniqueIds = [...new Set(reports.map(r => String(r.apartment_id)))];
+
+        if (uniqueIds.length === 0) {
+            ul.innerHTML = "<li>אין דירות במערכת.</li>";
+            return;
+        }
+
+        ul.innerHTML = "";
+        uniqueIds.forEach(id => {
+            const li = document.createElement("li");
+            const a = document.createElement("a");
+            a.href = "dashboard.html?apartment_id=" + encodeURIComponent(id);
+            a.textContent = "דירה " + id;
+            li.appendChild(a);
+            ul.appendChild(li);
+        });
+
+    } catch (err) {
+        console.error(err);
+        ul.innerHTML = "<li>שגיאה בטעינת הדירות.</li>";
+    }
+}
+
+loadApartments();
+</script>
+
+</body>
+</html>
+

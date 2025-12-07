@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>דירה</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background:#f5f5f5;
+            margin:0;
+            padding:20px;
+        }
+        header {
+            background:#fff;
+            padding:15px;
+            margin-bottom:20px;
+            border-radius:8px;
+            box-shadow:0 0 5px rgba(0,0,0,0.15);
+        }
+        a { color:#0066cc; text-decoration:none; }
+        a:hover { text-decoration:underline; }
+
+        .card {
+            background:#fff;
+            padding:20px;
+            border-radius:10px;
+            box-shadow:0 0 5px rgba(0,0,0,0.2);
+        }
+
+        table {
+            width:100%;
+            border-collapse:collapse;
+            margin-top:15px;
+        }
+        th, td {
+            border:1px solid #ccc;
+            padding:10px;
+            vertical-align:top;
+        }
+        th {
+            background:#eee;
+        }
+
+        img.report-photo {
+            width:70px;
+            height:70px;
+            object-fit:cover;
+            border-radius:6px;
+        }
+
+        .btn-primary {
+            background:#0078ff;
+            padding:8px 12px;
+            border-radius:6px;
+            color:white;
+            text-decoration:none;
+        }
+
+        .btn-secondary {
+            padding:5px 10px;
+            background:#ddd;
+            border-radius:4px;
+        }
+
+        .status-label {
+            padding:3px 7px;
+            border-radius:4px;
+            color:white;
+            font-weight:bold;
+            display:inline-block;
+        }
+        .status-received { background:#888; }
+        .status-in_progress { background:#E69500; }
+        .status-done { background:#2E8B57; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="index.html">דף הבית</a> |
+    <a href="all_reports.html">כל התקלות</a>
+</header>
+
+<div class="card">
+    <h2 id="apt-title">דירה</h2>
+
+    <p>
+        <a id="btn-new-report" class="btn-primary" href="#">
+            + דיווח תקלה / חוסר חדש
+        </a>
+    </p>
+
+    <div id="reports-container">טוען...</div>
+</div>
+
+<script>
+const API_BASE = "https://script.google.com/macros/s/AKfycbwWqG5XO7MBvVAbUUeA8Pibad2HY3JncwMpWCulsE2-ybtP86yzZ0342aATRvLRVAT7/exec";
+
+function getQueryParam(name) {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(name);
+}
+
+function issueTypeText(type) {
+    if (type === "broken") return "משהו התקלקל";
+    if (type === "missing") return "משהו חסר";
+    return "אחר";
+}
+
+function priorityText(p) {
+    return p === "high" ? "<span style='color:red;font-weight:bold;'>קריטי</span>" : "רגיל";
+}
+
+function statusHTML(status) {
+    let cls = "status-label status-" + status;
+    let txt =
+        status === "received" ? "התקבל" :
+        status === "in_progress" ? "בטיפול" :
+        status === "done" ? "טופל" : status;
+
+    return `<span class="${cls}">${txt}</span>`;
+}
+
+async function updateStatus(reportId, newStatus) {
+    const res = await fetch(API_BASE + "?action=update_status", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({
+            report_id: reportId,
+            new_status: newStatus
+        })
+    });
+
+    const data = await res.json();
+    if (!data.ok) {
+        alert("שגיאה בעדכון סטטוס");
+        console.error(data);
+    }
+}
+
+function renderReports(reports) {
+    const container = document.getElementById("reports-container");
+
+    if (!reports.length) {
+        container.innerHTML = "<p>אין עדיין דיווחים לדירה זו.</p>";
+        return;
+    }
+
+    let html = `
+    <h3>דיווחים קיימים</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>תאריך</th>
+                <th>אזור</th>
+                <th>פריט</th>
+                <th>סוג</th>
+                <th>דחיפות</th>
+                <th>סטטוס</th>
+                <th>תיאור</th>
+                <th>תמונה</th>
+                <th>עדכון</th>
+            </tr>
+        </thead>
+        <tbody>
+    `;
+
+    reports.forEach(r => {
+        html += `
+        <tr>
+            <td>${r.id}</td>
+            <td>${r.created_at}</td>
+            <td>${r.room}</td>
+            <td>${r.item || ""}</td>
+
+            <td>${issueTypeText(r.issue_type)}</td>
+
+            <td>${priorityText(r.priority)}</td>
+
+            <td>${statusHTML(r.status)}</td>
+
+            <td style="max-width:200px;">${r.description || ""}</td>
+
+            <td>
+                ${r.photo_filename ? `
+                    <a href="static/uploads/${r.photo_filename}" target="_blank">
+                        <img class="report-photo" src="static/uploads/${r.photo_filename}">
+                    </a>
+                ` : "אין"}
+            </td>
+
+            <td>
+                <select id="sel-${r.id}">
+                    <option value="received"    ${r.status==="received"?"selected":""}>התקבל</option>
+                    <option value="in_progress" ${r.status==="in_progress"?"selected":""}>בטיפול</option>
+                    <option value="done"        ${r.status==="done"?"selected":""}>טופל</option>
+                </select>
+
+                <button class="btn-secondary" onclick="saveStatus(${r.id})">עדכן</button>
+            </td>
+        </tr>
+        `;
+    });
+
+    html += "</tbody></table>";
+    container.innerHTML = html;
+}
+
+async function saveStatus(id) {
+    const sel = document.getElementById("sel-" + id);
+    const newStatus = sel.value;
+    await updateStatus(id, newStatus);
+    alert("הסטטוס עודכן");
+    loadDashboard(); // רענון
+}
+
+async function loadDashboard() {
+    const aptId = getQueryParam("apartment_id");
+    if (!aptId) {
+        document.getElementById("reports-container").innerHTML = "<p>שגיאה: לא הועבר apartment_id</p>";
+        return;
+    }
+
+    document.getElementById("apt-title").innerText = "דירה " + aptId;
+    document.getElementById("btn-new-report").href = "report_step1.html?apartment_id=" + aptId;
+
+    try {
+        const res = await fetch(
+            API_BASE + "?action=get_reports_by_apartment&apartment_id=" + encodeURIComponent(aptId)
+        );
+        const data = await res.json();
+
+        if (!data.ok) throw new Error(data.error);
+
+        renderReports(data.reports);
+    } catch (err) {
+        console.error(err);
+        document.getElementById("reports-container").innerHTML = "<p>שגיאה בטעינת הדיווחים.</p>";
+    }
+}
+
+loadDashboard();
+</script>
+
+</body>
+</html>
+

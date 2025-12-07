@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>דיווח חדש – שלב 3</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 16px;
+            background-color: #f7f7f7;
+        }
+        .card {
+            background:#fff;
+            padding:20px;
+            border-radius:10px;
+            box-shadow:0 0 5px rgba(0,0,0,0.2);
+            margin-bottom:20px;
+        }
+        button {
+            padding:10px 16px;
+            cursor:pointer;
+        }
+        .btn-primary {
+            background:#007bff;
+            color:white;
+            border:none;
+            border-radius:4px;
+        }
+        .btn-secondary {
+            background:#6c757d;
+            color:white;
+            border:none;
+            border-radius:4px;
+            margin-right:10px;
+        }
+        input[type="file"] {
+            margin-top: 10px;
+        }
+        .summary-box {
+            background:#f1f1f1;
+            padding:15px;
+            border-radius:8px;
+            margin-bottom:20px;
+        }
+    </style>
+</head>
+<body>
+
+<header class="card">
+    <a href="index.html">דף הבית</a> |
+    <a href="all_reports.html">כל התקלות</a>
+</header>
+
+<div class="card">
+    <h2>דיווח חדש – שלב 3 מתוך 3</h2>
+    <p>הוספת תמונה (לא חובה) ואישור הדיווח.</p>
+
+    <div class="summary-box">
+        <h3>סיכום לפני שליחה</h3>
+        <p><strong>אזור:</strong> <span id="sum-room"></span></p>
+        <p><strong>סוג:</strong> <span id="sum-issue"></span></p>
+        <p><strong>פריט:</strong> <span id="sum-item"></span></p>
+        <p><strong>תיאור:</strong> <span id="sum-description"></span></p>
+        <p><strong>דחיפות:</strong> <span id="sum-priority"></span></p>
+    </div>
+
+    <form id="step3-form">
+        <label for="photo">תמונה (לא חובה)</label>
+        <input type="file" id="photo" accept="image/*">
+
+        <button class="btn-secondary" type="button" id="btn-back">חזרה לשלב 2</button>
+
+        <button class="btn-primary" type="submit">שלח דיווח</button>
+    </form>
+</div>
+
+<script>
+// -------------------------------
+// טוענים נתונים מה-sessionStorage
+// -------------------------------
+const room        = sessionStorage.getItem("report_room");
+const issue       = sessionStorage.getItem("report_issue_type");
+const item        = sessionStorage.getItem("report_item");
+const description = sessionStorage.getItem("report_description");
+const priority    = sessionStorage.getItem("report_priority");
+
+if (!room || !issue || !item) {
+    alert("שגיאה: חסרים נתונים משלבים קודמים.");
+    window.location.href = "report_step1.html";
+}
+
+// הצגת סיכום
+document.getElementById("sum-room").textContent = room;
+document.getElementById("sum-issue").textContent =
+    issue === "broken" ? "משהו התקלקל" :
+    issue === "missing" ? "משהו חסר" : "אחר";
+document.getElementById("sum-item").textContent = item;
+document.getElementById("sum-description").textContent = description || "—";
+document.getElementById("sum-priority").textContent =
+    priority === "high" ? "קריטי" : "רגיל";
+
+// חוזרים לשלב 2
+document.getElementById("btn-back").addEventListener("click", () => {
+    const params = new URLSearchParams(window.location.search);
+    const aptId = params.get("apartment_id");
+    window.location.href = `report_step2.html?apartment_id=${aptId}`;
+});
+
+// -------------------------------
+// שליחת הדיווח ל-Apps Script
+// -------------------------------
+const form = document.getElementById("step3-form");
+
+form.addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const params = new URLSearchParams(window.location.search);
+    const aptId = params.get("apartment_id");
+
+    if (!aptId) {
+        alert("שגיאה: חסר apartment_id");
+        return;
+    }
+
+    const apiUrl =
+        "https://script.google.com/macros/s/AKfycbwWqG5XO7MBvVAbUUeA8Pibad2HY3JncwMpWCulsE2-ybtP86yzZ0342aATRvLRVAT7/exec";
+
+    const payload = {
+        apartment_id: aptId,
+        room: room,
+        item: item,
+        issue_type: issue,
+        description: description || "",
+        priority: priority,
+        status: "received"
+    };
+
+    try {
+        const response = await fetch(apiUrl + "?action=create_report", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!data.ok) {
+            alert("שגיאה בשליחת הדיווח: " + data.error);
+            return;
+        }
+
+        alert("הדיווח נשלח בהצלחה!");
+
+        // ניקוי מידע
+        sessionStorage.removeItem("report_room");
+        sessionStorage.removeItem("report_issue_type");
+        sessionStorage.removeItem("report_item");
+        sessionStorage.removeItem("report_description");
+        sessionStorage.removeItem("report_priority");
+
+        // שליחה לדשבורד
+        window.location.href = `dashboard.html?apartment_id=${aptId}`;
+    }
+    catch (err) {
+        alert("שגיאה בתקשורת עם השרת.");
+        console.error(err);
+    }
+});
+</script>
+
+</body>
+</html>
+

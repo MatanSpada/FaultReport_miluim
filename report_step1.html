@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>דיווח חדש – שלב 1</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 16px;
+            background-color: #f7f7f7;
+        }
+        .card {
+            background:#fff;
+            padding:20px;
+            border-radius:10px;
+            box-shadow:0 0 5px rgba(0,0,0,0.2);
+            margin-bottom:20px;
+        }
+        select, input[type="text"], textarea {
+            width:100%;
+            padding:8px;
+            margin-top:6px;
+            margin-bottom:12px;
+        }
+        button {
+            padding:10px 16px;
+            cursor:pointer;
+        }
+        .btn-primary {
+            background:#007bff;
+            color:white;
+            border:none;
+            border-radius:4px;
+        }
+        .type-buttons {
+            margin-top:8px;
+        }
+        .type-button {
+            display:inline-block;
+            padding:8px 12px;
+            margin:4px 2px;
+            border:1px solid #ccc;
+            border-radius:4px;
+            cursor:pointer;
+            user-select:none;
+        }
+        .type-button.selected {
+            border-color:#007bff;
+            font-weight:bold;
+        }
+        .type-button input {
+            display:none;
+        }
+    </style>
+</head>
+<body>
+
+<header class="card">
+    <a href="index.html">דף הבית</a> |
+    <a href="all_reports.html">כל התקלות</a>
+</header>
+
+<div class="card">
+    <h2>דיווח חדש – שלב 1 מתוך 3</h2>
+    <p>בחר את האזור בדירה וסוג הבעיה.</p>
+
+    <form id="step1-form">
+        <label for="room">אזור בדירה</label>
+        <select id="room" name="room" required>
+            <option value="">בחר אזור...</option>
+            <option value="סלון">סלון</option>
+            <option value="מטבח">מטבח</option>
+            <option value="חדר שינה הורים">חדר שינה הורים</option>
+            <option value="חדר ילדים 1">חדר ילדים 1</option>
+            <option value="חדר ילדים 2">חדר ילדים 2</option>
+            <option value="מקלחת">מקלחת</option>
+            <option value="שירותים">שירותים</option>
+            <option value="מרפסת">מרפסת</option>
+        </select>
+
+        <label>סוג הבעיה</label>
+        <div class="type-buttons">
+            <label class="type-button">
+                <input type="radio" name="issue_type" value="broken" required>
+                🔧 משהו התקלקל
+            </label>
+            <label class="type-button">
+                <input type="radio" name="issue_type" value="missing">
+                📦 משהו חסר
+            </label>
+            <label class="type-button">
+                <input type="radio" name="issue_type" value="other">
+                ❓ משהו אחר
+            </label>
+        </div>
+
+        <button class="btn-primary" type="submit">המשך לשלב 2</button>
+    </form>
+</div>
+
+<script>
+// -------------------------
+// עיצוב בחירת כפתור
+// -------------------------
+document.querySelectorAll(".type-button").forEach(btn => {
+    btn.addEventListener("click", () => {
+        const name = btn.querySelector("input").name;
+        document.querySelectorAll(`input[name="${name}"]`).forEach(i => 
+            i.parentElement.classList.remove("selected")
+        );
+        btn.classList.add("selected");
+        btn.querySelector("input").checked = true;
+    });
+});
+
+// -------------------------
+// שמירת שלב 1 והמשך לשלב הבא
+// -------------------------
+const form = document.getElementById("step1-form");
+
+form.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const params = new URLSearchParams(window.location.search);
+    const apartmentId = params.get("apartment_id");
+
+    if (!apartmentId) {
+        alert("שגיאה: חסר apartment_id ב־URL");
+        return;
+    }
+
+    const room = document.getElementById("room").value;
+    const issueType = form.querySelector("input[name='issue_type']:checked")?.value;
+
+    if (!room || !issueType) {
+        alert("נא לבחור אזור וסוג בעיה");
+        return;
+    }
+
+    // ❗ שומרים מידע זמני למעבר בין שלבים
+    sessionStorage.setItem("report_room", room);
+    sessionStorage.setItem("report_issue_type", issueType);
+
+    // ❗ מעבר לשלב 2
+    window.location.href = `report_step2.html?apartment_id=${encodeURIComponent(apartmentId)}`;
+});
+</script>
+
+</body>
+</html>
+

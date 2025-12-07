@@ -2,7 +2,8 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}ניהול דירות{% endblock %}</title>
+    <title>ניהול דירות</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -97,7 +98,7 @@
             color: #155724;
         }
         .flash-error {
-            background-color: #f8d7da;
+           	background-color: #f8d7da;
             color: #721c24;
         }
         table {
@@ -132,14 +133,14 @@
             display: block;
         }
     </style>
-    {% block extra_head %}{% endblock %}
 </head>
 <body>
+
 <header class="card">
     <div class="top-nav">
         <div>
-            <a href="{{ url_for('index') }}">בחירת דירה</a> &nbsp; | &nbsp;
-            <a href="{{ url_for('all_reports') }}">כל התקלות</a>
+            <a href="index.html">בחירת דירה</a> &nbsp; | &nbsp;
+            <a href="all_reports.html">כל התקלות</a>
         </div>
         <div>
             ניהול דירות – דיווח תקלות וחוסרים
@@ -147,22 +148,15 @@
     </div>
 </header>
 
-<div>
-    {% with messages = get_flashed_messages(with_categories=True) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="flash flash-{{ category }}">
-              {{ message }}
-          </div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-</div>
-
-{% block content %}{% endblock %}
+<!-- 
+    שים לב:
+    layout.html כבר לא משמש "תבנית" כמו ב-Flask,
+    ולכן הוא לא כולל block content או extends.
+    כל דף HTML צריך פשוט להתחיל מהעדכון הבא ולהמשיך בתוכו.
+-->
 
 <script>
-    // פונקציה לסימון ויזואלי של כפתור סוג בעיה
+    // שמירה על בחירת סוג תקלה בכפתורים (UI בלבד)
     document.addEventListener("DOMContentLoaded", function () {
         const buttons = document.querySelectorAll(".type-button");
         buttons.forEach(btn => {
@@ -179,3 +173,4 @@
 
 </body>
 </html>
+

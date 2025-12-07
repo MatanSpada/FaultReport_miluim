@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>כל התקלות במערכת</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            background:#f5f5f5;
+            margin:0;
+            padding:20px;
+        }
+        header {
+            background:#fff;
+            padding:15px;
+            margin-bottom:20px;
+            border-radius:8px;
+            box-shadow:0 0 5px rgba(0,0,0,0.15);
+        }
+        a { color:#0066cc; text-decoration:none; }
+        a:hover { text-decoration:underline; }
+
+        table {
+            width:100%;
+            border-collapse:collapse;
+            background:#fff;
+        }
+        th, td {
+            border:1px solid #ddd;
+            padding:10px;
+        }
+        th {
+            background:#eee;
+        }
+
+        button {
+            padding:5px 10px;
+            cursor:pointer;
+        }
+
+        select {
+            padding:4px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="index.html">דף הבית</a> |
+    <a href="all_reports.html">כל התקלות</a>
+</header>
+
+<h2 style="margin-bottom:20px;">כל התקלות במערכת</h2>
+
+<div style="margin-bottom:20px;">
+    <strong>סינון:</strong>
+    <a href="all_reports.html">הכול</a> &nbsp;|&nbsp;
+    <a href="all_reports.html?status=received">תקלות פתוחות</a> &nbsp;|&nbsp;
+    <a href="all_reports.html?status=in_progress">תקלות בטיפול</a> &nbsp;|&nbsp;
+    <a href="all_reports.html?status=done">תקלות שטופלו</a>
+</div>
+
+<div id="reports-container">
+    טוען...
+</div>
+
+<script>
+const API_BASE = "https://script.google.com/macros/s/AKfycbwWqG5XO7MBvVAbUUeA8Pibad2HY3JncwMpWCulsE2-ybtP86yzZ0342aATRvLRVAT7/exec";
+
+function getQueryParam(name){
+    const p = new URLSearchParams(window.location.search);
+    return p.get(name);
+}
+
+function statusLabel(s){
+    if(s === "received") return "התקבל";
+    if(s === "in_progress") return "בטיפול";
+    if(s === "done") return "טופל";
+    return s;
+}
+
+async function updateStatus(reportId, newStatus){
+    const res = await fetch(API_BASE + "?action=update_status", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({
+            report_id: reportId,
+            new_status: newStatus
+        })
+    });
+
+    const data = await res.json();
+    if(!data.ok){
+        alert("שגיאה בעדכון הסטטוס");
+        console.error(data);
+    }
+}
+
+function renderReports(reports){
+    if(!reports.length){
+        document.getElementById("reports-container").innerHTML = "<p>אין דיווחים.</p>";
+        return;
+    }
+
+    let html = `
+    <table>
+        <thead>
+            <tr>
+                <th>מספר</th>
+                <th>דירה</th>
+                <th>תאריך</th>
+                <th>חדר</th>
+                <th>קטגוריה</th>
+                <th>תיאור</th>
+                <th>עדיפות</th>
+                <th>סטטוס</th>
+                <th>פעולה</th>
+            </tr>
+        </thead>
+        <tbody>
+    `;
+
+    reports.forEach(r => {
+        html += `
+        <tr>
+            <td>${r.id}</td>
+            <td>${r.apartment_id}</td>
+            <td>${r.created_at}</td>
+            <td>${r.room}</td>
+            <td>${r.issue_type}</td>
+            <td>${r.description}</td>
+            <td>${r.priority}</td>
+
+            <td>${statusLabel(r.status)}</td>
+
+            <td>
+                <select id="sel-${r.id}">
+                    <option value="received"    ${r.status==="received"?"selected":""}>התקבל</option>
+                    <option value="in_progress" ${r.status==="in_progress"?"selected":""}>בטיפול</option>
+                    <option value="done"        ${r.status==="done"?"selected":""}>טופל</option>
+                </select>
+
+                <button onclick="saveStatus(${r.id})">שמור</button>
+            </td>
+        </tr>
+        `;
+    });
+
+    html += "</tbody></table>";
+    document.getElementById("reports-container").innerHTML = html;
+}
+
+async function saveStatus(id){
+    const sel = document.getElementById("sel-" + id);
+    const newStatus = sel.value;
+    await updateStatus(id, newStatus);
+    alert("הסטטוס נשמר");
+}
+
+async function loadReports(){
+    const status = getQueryParam("status");
+    let url = API_BASE + "?action=get_all_reports";
+
+    if(status){
+        url += "&status=" + encodeURIComponent(status);
+    }
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if(!data.ok){
+        document.getElementById("reports-container").innerHTML = "<p>שגיאה בטעינה</p>";
+        return;
+    }
+
+    renderReports(data.reports);
+}
+
+loadReports();
+</script>
+
+</body>
+</html>
+
