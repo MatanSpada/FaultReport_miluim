@@ -8,6 +8,7 @@ from flask import (
 from werkzeug.utils import secure_filename
 from sheets_api import get_reports_by_apartment
 from apartments import APARTMENTS
+from drive_api import upload_image_to_drive
 
 
 # -------------------------
@@ -107,6 +108,7 @@ def report_step2(apt_id):
 
 @app.route("/apartment/<apt_id>/report/new/step3", methods=["GET", "POST"])
 def report_step3(apt_id):
+
     if apt_id not in APARTMENTS:
         flash("דירה לא קיימת", "error")
         return redirect(url_for("index"))
@@ -119,44 +121,48 @@ def report_step3(apt_id):
     if request.method == "POST":
         photo_file = request.files.get("photo")
         photo_filename = None
+        drive_url = ""
 
         if photo_file and photo_file.filename:
+
             safe_name = secure_filename(photo_file.filename)
-            # להוסיף חותמת זמן כדי למנוע התנגשות שמות
+
             timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
             name, ext = os.path.splitext(safe_name)
             final_name = f"{name}_{timestamp}{ext}"
+
             save_path = os.path.join(app.config["UPLOAD_FOLDER"], final_name)
             photo_file.save(save_path)
-            photo_filename = final_name
+
+            # ⬅️ שלב חדש: העלאה ל-Google Drive
+            try:
+                drive_url = upload_image_to_drive(save_path, final_name)
+            except Exception as e:
+                print("Drive upload error:", e)
+                drive_url = ""
 
         # להכין תיאור מלא שמשלב פריט + תיאור חופשי
         item = draft.get("item", "")
         description = draft.get("description", "")
-        full_description = description
-        if item:
-            if description:
-                full_description = f"{item} - {description}"
-            else:
-                full_description = item
+        full_description = f"{item} - {description}" if item and description else item or description
 
-        # שמירת הדיווח בגוגל שיטס
+        # ⬅️ הכנסת ה־drive_url לשיטס
         report_id = add_report_to_sheet(
             apartment_id=apt_id,
             room=draft["room"],
             issue_type=draft["issue_type"],
             description=full_description,
             priority=draft.get("priority", "normal"),
-            image_url=""  # בשלב הזה בלי קישור לתמונה – נטפל בזה בהמשך
+            image_url=drive_url
         )
 
-        # לנקות את הדראפט
         session.pop("report_draft", None)
 
         flash(f"דיווח #{report_id} נשלח בהצלחה!", "success")
         return redirect(url_for("apartment_dashboard", apt_id=apt_id))
 
     return render_template("report_step3.html", apartment_id=apt_id, draft=draft)
+
 
 
 @app.route("/apartment/<apt_id>/report/<int:report_id>/set_status", methods=["POST"])
@@ -179,7 +185,38 @@ def set_status(apt_id, report_id):
     return redirect(url_for("apartment_dashboard", apt_id=apt_id))
 
 
+@app.route("/all_reports")
+def all_reports():
+    from sheets_api import get_all_reports
+
+    status_filter = request.args.get("status")  # None / "received" / "processing" / "done"
+
+    reports = get_all_reports()
+
+    # אם יש סינון — נסנן
+    if status_filter:
+        reports = [r for r in reports if r["status"] == status_filter]
+
+    return render_template("all_reports.html", reports=reports)
+
+
+
+@app.route("/report/<int:report_id>/status", methods=["POST"])
+def update_status_from_all_reports(report_id):
+    from sheets_api import update_report_status
+
+    new_status = request.form.get("status")
+    update_report_status(report_id, new_status)
+
+    return redirect(url_for("all_reports"))
+
+
+
+
 
 if __name__ == "__main__":
     # הרצה מקומית
     app.run(host="0.0.0.0", port=5000, debug=True)
+
+
+

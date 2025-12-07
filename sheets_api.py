@@ -119,6 +119,44 @@ def get_reports_by_apartment(apartment_id):
     return reports
 
 
+def get_all_reports():
+    """
+    מחזיר את כל הדיווחים מכל הדירות מתוך Google Sheets.
+    """
+    service = get_sheet_service()
+
+    result = service.values().get(
+        spreadsheetId=SPREADSHEET_ID,
+        range=f"{SHEET_NAME}!A2:H"
+    ).execute()
+
+    rows = result.get("values", [])
+
+    reports = []
+    for row in rows:
+        # מבטיחים שכל שורה תהיה לפחות 8 תאים
+        while len(row) < 8:
+            row.append("")
+
+        report_id, apt_id, created_at, room, issue_type, description, priority, status = row
+
+        reports.append({
+            "id": int(report_id),
+            "apartment_id": apt_id,
+            "created_at": created_at,
+            "room": room,
+            "issue_type": issue_type,
+            "description": description,
+            "priority": priority,
+            "status": status,
+            "photo_filename": None
+        })
+
+    # ממיינים מהחדש לישן
+    reports.sort(key=lambda r: r["id"], reverse=True)
+
+    return reports
+
 
 
 def update_report_status(report_id, new_status):
