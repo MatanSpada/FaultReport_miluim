@@ -133,7 +133,9 @@
     .filter-bar a {
         display: inline-block;
         margin-bottom: 6px;
+        font-size: 13px;
     }
+
 
     /* --- LOADER / "טוען..." --- */
 

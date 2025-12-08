@@ -71,14 +71,9 @@
 </head>
 <body> <div class="container">
 
-<header style="max-width:900px; margin:0 auto;">
-    <a href="index.html">דף הבית</a> |
-    <a href="all_reports.html">כל התקלות</a>
-</header>
+<h2 class="page-title">כל התקלות במערכת</h2>
 
-<h2 style="margin-bottom:20px;">כל התקלות במערכת</h2>
-
-<div class="filter-bar" style="margin-bottom:20px;">
+<div class="filter-bar">
     <strong>סינון:</strong>
     <a href="all_reports.html">הכול</a> &nbsp;|&nbsp;
     <a href="all_reports.html?status=open">תקלות פתוחות</a> &nbsp;|&nbsp;
@@ -126,9 +121,11 @@ async function updateStatus(reportId, newStatus){
 
 function renderReports(reports){
     if(!reports.length){
-        document.getElementById("reports-container").innerHTML = "<p>אין דיווחים.</p>";
+        document.getElementById("reports-container").innerHTML =
+            '<p class="empty-message">אין דיווחים.</p>';
         return;
     }
+
 
     let html = `
     <table class="responsive-table">
