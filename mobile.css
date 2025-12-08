@@ -14,6 +14,10 @@
     header {
         padding: 10px;
         font-size: 14px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        text-align: center;
     }
 
     h2, h3 {
@@ -127,7 +131,7 @@
 
     /* רשימת הדירות — פחות רווח במובייל */
     #apt-list li {
-        margin-bottom: 6px;      /* פחות רווח */
+        margin-bottom: 2px;      /* פחות רווח */
     }
 
     #apt-list a {
