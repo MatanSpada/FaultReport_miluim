@@ -82,19 +82,22 @@
 <body>
 <div class="container">
 
-<header>
+<header style="max-width:900px; margin:0 auto;">
     <a href="index.html">דף הבית</a> |
     <a href="all_reports.html">כל התקלות</a>
 </header>
 
 <div class="card container">
-    <h2 id="apt-title">מתקן</h2>
+    <h2 id="apt-title" style="text-align:center; margin-top:10px;">מתקן</h2>
 
-    <p>
-        <a id="btn-new-report" class="btn-primary" href="#">
+    <p style="text-align:center;">
+        <a id="btn-new-report" class="btn-primary" 
+        style="display:inline-block; width:auto; padding:12px 20px; text-align:center;"
+        href="#">
             + דיווח תקלה / חוסר חדש
         </a>
     </p>
+
 
     <div id="reports-container" class="table-wrapper">
         <div class="loader-box">
@@ -152,7 +155,7 @@ function renderReports(reports) {
     const container = document.getElementById("reports-container");
 
     if (!reports.length) {
-        container.innerHTML = "<p>אין עדיין דיווחים למתקן זו.</p>";
+        container.innerHTML = "<p>אין עדיין דיווחים למתקן זה.</p>";
         return;
     }
 
@@ -232,7 +235,8 @@ async function loadDashboard() {
         return;
     }
 
-    document.getElementById("apt-title").innerText = "מתקן " + aptId;
+    const aptName = window.APARTMENTS[aptId] || aptId;
+    document.getElementById("apt-title").innerText = "מתקן " + aptName;
     document.getElementById("btn-new-report").href = "report_step1.html?apartment_id=" + aptId;
 
     try {

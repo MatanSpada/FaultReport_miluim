@@ -23,6 +23,8 @@
 
     .card {
         padding: 15px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     ul#apt-list li {
@@ -123,19 +125,20 @@
         line-height: 1.4;
     }
 
-    /* רשימת הדירות — שיהיו קליקים נוחים */
+    /* רשימת הדירות — פחות רווח במובייל */
     #apt-list li {
-        margin-bottom: 14px;
+        margin-bottom: 6px;      /* פחות רווח */
     }
 
     #apt-list a {
         display: block;
-        padding: 12px;
+        padding: 8px 10px;       /* קטן יותר */
         background: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 0 5px rgba(0,0,0,0.15);
-        font-size: 16px;
+        border-radius: 6px;
+        box-shadow: 0 0 4px rgba(0,0,0,0.12);
+        font-size: 15px;         /* טיפה קטן */
     }
+
 
     .responsive-table {
         width: 100%;
