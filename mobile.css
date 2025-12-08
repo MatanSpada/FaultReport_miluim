@@ -40,7 +40,7 @@
     }
 
     #apt-list li {
-        margin-bottom: 2px;       /* רווח קטן בין מתקנים */
+        margin-bottom: 4px;       /* רווח קטן בין מתקנים */
     }
 
     #apt-list a {

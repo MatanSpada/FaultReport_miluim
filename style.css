@@ -20,8 +20,14 @@
 }
 
 header {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    text-align: center;
+    background:#fff;
+    padding:15px 20px;
+    margin:0 -20px 20px;   /* מבטל את ה-padding של body משני הצדדים */
+    border-radius:0;       /* בלי פינות עגולות – פס לבן מלא */
+    box-shadow:0 0 5px rgba(0,0,0,0.15);
+}
+
+.empty-message {
+    text-align:center;
+    margin-top:20px;
 }

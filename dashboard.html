@@ -157,7 +157,7 @@ function renderReports(reports) {
     const container = document.getElementById("reports-container");
 
     if (!reports.length) {
-        container.innerHTML = "<p>אין עדיין דיווחים למתקן זה.</p>";
+        container.innerHTML = '<p class="empty-message">אין עדיין דיווחים למתקן זה.</p>';
         return;
     }
 
