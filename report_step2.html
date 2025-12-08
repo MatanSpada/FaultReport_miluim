@@ -100,7 +100,7 @@
 const room = sessionStorage.getItem("report_room");
 const issue = sessionStorage.getItem("report_issue_type");
 
-if (!room || !issue) {
+if ((!room && !isZakif) || !issue) {
     alert("שגיאה: לא מילאת את שלב 1");
     window.location.href = "report_step1.html";
 }
@@ -152,4 +152,3 @@ document.getElementById("btn-back").addEventListener("click", () => {
 </div>
 </body>
 </html>
-
