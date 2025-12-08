@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>דירה</title>
+    <title>מתקן</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="mobile.css">
@@ -88,7 +88,7 @@
 </header>
 
 <div class="card container">
-    <h2 id="apt-title">דירה</h2>
+    <h2 id="apt-title">מתקן</h2>
 
     <p>
         <a id="btn-new-report" class="btn-primary" href="#">
@@ -152,7 +152,7 @@ function renderReports(reports) {
     const container = document.getElementById("reports-container");
 
     if (!reports.length) {
-        container.innerHTML = "<p>אין עדיין דיווחים לדירה זו.</p>";
+        container.innerHTML = "<p>אין עדיין דיווחים למתקן זו.</p>";
         return;
     }
 
@@ -232,7 +232,7 @@ async function loadDashboard() {
         return;
     }
 
-    document.getElementById("apt-title").innerText = "דירה " + aptId;
+    document.getElementById("apt-title").innerText = "מתקן " + aptId;
     document.getElementById("btn-new-report").href = "report_step1.html?apartment_id=" + aptId;
 
     try {

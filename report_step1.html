@@ -68,21 +68,22 @@
 
 <div class="card">
     <h2>דיווח חדש – שלב 1 מתוך 3</h2>
-    <p>בחר את האזור בדירה וסוג הבעיה.</p>
+    <p id="select-text">בחר את האזור במתקן וסוג הבעיה.</p>
+
 
     <form id="step1-form">
-        <label for="room">אזור בדירה</label>
-        <select id="room" name="room" required>
-            <option value="">בחר אזור...</option>
-            <option value="סלון">סלון</option>
-            <option value="מטבח">מטבח</option>
-            <option value="חדר שינה הורים">חדר שינה הורים</option>
-            <option value="חדר ילדים 1">חדר ילדים 1</option>
-            <option value="חדר ילדים 2">חדר ילדים 2</option>
-            <option value="מקלחת">מקלחת</option>
-            <option value="שירותים">שירותים</option>
-            <option value="מרפסת">מרפסת</option>
-        </select>
+        <div id="room-block">
+            <label for="room">אזור במתקן</label>
+            <select id="room" name="room" required>
+                <option value="">בחר אזור...</option>
+                <option value="סלון">סלון</option>
+                <option value="מטבח">מטבח</option>
+                <option value="חדר שינה">חדר שינה</option>
+                <option value="מקלחת">מקלחת</option>
+                <option value="שירותים">שירותים</option>
+                <option value="מרפסת">מרפסת</option>
+            </select>
+        </div>
 
         <label>סוג הבעיה</label>
         <div class="type-buttons">
@@ -105,6 +106,20 @@
 </div>
 
 <script>
+
+const params = new URLSearchParams(window.location.search);
+const aptId = params.get("apartment_id");
+
+// דירות זקיף
+const isZakif = (aptId === "6" || aptId === "12");
+
+if (isZakif) {
+    document.getElementById("room-block").style.display = "none";
+    document.getElementById("select-text").textContent = "בחר את סוג הבעיה";  // ← שינוי הטקסט
+    document.getElementById("room").required = false;
+}
+
+
 // -------------------------
 // עיצוב בחירת כפתור
 // -------------------------
@@ -135,13 +150,16 @@ form.addEventListener("submit", function(e) {
         return;
     }
 
-    const room = document.getElementById("room").value;
+    let room = document.getElementById("room").value;
+    if (isZakif) room = "";   // אין אזור בדירות זקיף
+
     const issueType = form.querySelector("input[name='issue_type']:checked")?.value;
 
-    if (!room || !issueType) {
-        alert("נא לבחור אזור וסוג בעיה");
+    if ((!isZakif && !room) || !issueType) {
+        alert("נא למלא את כל השדות הנדרשים");
         return;
     }
+
 
     // ❗ שומרים מידע זמני למעבר בין שלבים
     sessionStorage.setItem("report_room", room);

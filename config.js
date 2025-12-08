@@ -1,4 +1,4 @@
-window.API_BASE = "https://script.google.com/macros/s/AKfycbwX1WpKPIgkr-TtbTDK3c8sIA0Uf0eEbUe6QTP09Z7g89L9WlvKay104NCa71u4oYyZ/exec";
+window.API_BASE = "https://script.google.com/macros/s/AKfycbzs3vmwip3xk0lPM3GNRG9YXNtbnuG46RzJt4vZv9te9e4jk_tinK2d0VaO7fedJUq0/exec";
 
 window.APARTMENTS = {
     "1": "רותם",
@@ -15,7 +15,7 @@ window.APARTMENTS = {
     "12": "זקיף אקליפטוס"
 };
 
-// פונקציית עזר שמחזירה שם דירה
+// פונקציית עזר שמחזירה שם מתקן
 window.getApartmentName = function(id){
-    return window.APARTMENTS[id] || ("דירה " + id);
+    return window.APARTMENTS[id] || ("מתקן " + id);
 };
