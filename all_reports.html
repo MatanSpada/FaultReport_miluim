@@ -43,7 +43,26 @@
         select {
             padding:4px;
         }
+        .status-received {
+            background:#fff3cd;   /* צהוב בהיר */
+            color:#856404;
+            padding:4px 6px;
+            border-radius:4px;
+        }
+        .status-in_progress {
+            background:#cce5ff;   /* כחול בהיר */
+            color:#004085;
+            padding:4px 6px;
+            border-radius:4px;
+        }
+        .status-done {
+            background:#d4edda;   /* ירוק בהיר */
+            color:#155724;
+            padding:4px 6px;
+            border-radius:4px;
+        }
     </style>
+    <script src="config.js"></script>
 </head>
 <body>
 
@@ -57,7 +76,7 @@
 <div style="margin-bottom:20px;">
     <strong>סינון:</strong>
     <a href="all_reports.html">הכול</a> &nbsp;|&nbsp;
-    <a href="all_reports.html?status=received">תקלות פתוחות</a> &nbsp;|&nbsp;
+    <a href="all_reports.html?status=open">תקלות פתוחות</a> &nbsp;|&nbsp;
     <a href="all_reports.html?status=in_progress">תקלות בטיפול</a> &nbsp;|&nbsp;
     <a href="all_reports.html?status=done">תקלות שטופלו</a>
 </div>
@@ -67,7 +86,6 @@
 </div>
 
 <script>
-const API_BASE = "https://script.google.com/macros/s/AKfycbwJQgvLaOQRs5sxp4GxTdH401aDeW5Bp0cPMbAT9p-0Pno6KvHORKQnFpZfHpuS1K4/exec";
 
 function getQueryParam(name){
     const p = new URLSearchParams(window.location.search);
@@ -75,9 +93,9 @@ function getQueryParam(name){
 }
 
 function statusLabel(s){
-    if(s === "received") return "התקבל";
-    if(s === "in_progress") return "בטיפול";
-    if(s === "done") return "טופל";
+    if(s === "received")     return '<span class="status-received">התקבל</span>';
+    if(s === "in_progress")  return '<span class="status-in_progress">בטיפול</span>';
+    if(s === "done")         return '<span class="status-done">טופל</span>';
     return s;
 }
 
@@ -121,11 +139,11 @@ function renderReports(reports){
         <tbody>
     `;
 
-    reports.forEach(r => {
+    reports.forEach((r, index) => {
         html += `
         <tr>
-            <td>${r.id}</td>
-            <td>${r.apartment_id}</td>
+            <td>${index + 1}</td>
+            <td>${getApartmentName(r.apartment_id)}</td>
             <td>${r.created_at}</td>
             <td>${r.room}</td>
             <td>${r.issue_type}</td>
@@ -162,20 +180,24 @@ async function loadReports(){
     const status = getQueryParam("status");
     let url = API_BASE + "?action=get_all_reports";
 
-    if(status){
+    if (status){
         url += "&status=" + encodeURIComponent(status);
     }
 
     const res = await fetch(url);
     const data = await res.json();
 
-    if(!data.ok){
+    if (!data.ok){
         document.getElementById("reports-container").innerHTML = "<p>שגיאה בטעינה</p>";
         return;
     }
 
+    // ⭐ מיון מהישן לחדש
+    data.reports.sort((a, b) => Number(a.id) - Number(b.id));
+
     renderReports(data.reports);
 }
+
 
 loadReports();
 </script>

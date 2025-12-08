@@ -74,6 +74,7 @@
         .status-in_progress { background:#E69500; }
         .status-done { background:#2E8B57; }
     </style>
+    <script src="config.js"></script>
 </head>
 <body>
 
@@ -95,7 +96,6 @@
 </div>
 
 <script>
-const API_BASE = "https://script.google.com/macros/s/AKfycbwJQgvLaOQRs5sxp4GxTdH401aDeW5Bp0cPMbAT9p-0Pno6KvHORKQnFpZfHpuS1K4/exec";
 
 function getQueryParam(name) {
     const params = new URLSearchParams(window.location.search);
@@ -169,7 +169,7 @@ function renderReports(reports) {
     reports.forEach(r => {
         html += `
         <tr>
-            <td>${r.id}</td>
+            <td>${index + 1}</td>
             <td>${r.created_at}</td>
             <td>${r.room}</td>
             <td>${r.item || ""}</td>
@@ -232,6 +232,9 @@ async function loadDashboard() {
         const data = await res.json();
 
         if (!data.ok) throw new Error(data.error);
+
+        // ⭐ מיון מהישן לחדש — 1 → 2 → 3
+        data.reports.sort((a, b) => Number(a.id) - Number(b.id));
 
         renderReports(data.reports);
     } catch (err) {

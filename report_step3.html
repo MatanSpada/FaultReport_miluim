@@ -46,6 +46,7 @@
             margin-bottom:20px;
         }
     </style>
+    <script src="config.js"></script>
 </head>
 <body>
 
@@ -125,9 +126,6 @@ form.addEventListener("submit", async function(e) {
         return;
     }
 
-    const apiUrl =
-        "https://script.google.com/macros/s/AKfycbwJQgvLaOQRs5sxp4GxTdH401aDeW5Bp0cPMbAT9p-0Pno6KvHORKQnFpZfHpuS1K4/exec";
-
     const payload = {
         apartment_id: aptId,
         room: room,
@@ -139,7 +137,7 @@ form.addEventListener("submit", async function(e) {
     };
 
     try {
-        const response = await fetch(apiUrl + "?action=create_report", {
+        const response = await fetch(API_BASE + "?action=create_report", {
             method: "POST",
             body: JSON.stringify(payload)
         });
