@@ -126,7 +126,7 @@ form.addEventListener("submit", async function(e) {
     }
 
     const apiUrl =
-        "https://script.google.com/macros/s/AKfycbwWqG5XO7MBvVAbUUeA8Pibad2HY3JncwMpWCulsE2-ybtP86yzZ0342aATRvLRVAT7/exec";
+        "https://script.google.com/macros/s/AKfycbwJQgvLaOQRs5sxp4GxTdH401aDeW5Bp0cPMbAT9p-0Pno6KvHORKQnFpZfHpuS1K4/exec";
 
     const payload = {
         apartment_id: aptId,
@@ -141,7 +141,6 @@ form.addEventListener("submit", async function(e) {
     try {
         const response = await fetch(apiUrl + "?action=create_report", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
 
