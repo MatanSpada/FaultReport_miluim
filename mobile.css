@@ -1,0 +1,154 @@
+/* רספונסיביות מלאה למובייל */
+@media (max-width: 600px) {
+
+    /* --- מבנה הדף --- */
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    header {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    h2, h3 {
+        font-size: 18px;
+        line-height: 1.3;
+    }
+
+    .card {
+        padding: 15px;
+    }
+
+    ul#apt-list li {
+        padding: 10px 0;
+        font-size: 16px;
+    }
+
+    ul#apt-list li a {
+        display: block;
+        padding: 8px 0;
+    }
+
+    .table-wrapper {
+        display: block;
+        overflow-x: auto;
+        width: 100%;
+    }
+
+
+    .filter-bar a {
+        display: inline-block;
+        margin-bottom: 6px;
+    }
+
+
+
+    /* --- שליטה באלמנטים --- */
+
+    input[type="text"],
+    input[type="file"],
+    select,
+    button,
+    textarea {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    button, select {
+        font-size: 14px;
+        padding: 6px 8px;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+        margin-bottom: 10px;
+        font-size: 16px;
+        padding: 12px;
+    }
+
+    #btn-new-report {
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+
+    .summary-box p,
+    .card p {
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    /* --- טבלאות --- */
+    table {
+        font-size: 14px;
+        width: 100%;
+        display: block;
+        overflow-x: auto;
+        border-spacing: 0;
+    }
+
+    th, td {
+        font-size: 14px;
+        padding: 8px;
+        white-space: nowrap;
+    }
+
+    tr {
+        border-bottom: 1px solid #ddd;
+    }
+
+    /* --- תמונות קטנות יותר --- */
+    img.report-photo {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* ריווח כללי */
+    h2 {
+        font-size: 20px;
+        margin-bottom: 12px;
+    }
+
+    .card p {
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    /* רשימת הדירות — שיהיו קליקים נוחים */
+    #apt-list li {
+        margin-bottom: 14px;
+    }
+
+    #apt-list a {
+        display: block;
+        padding: 12px;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 0 5px rgba(0,0,0,0.15);
+        font-size: 16px;
+    }
+
+    .responsive-table {
+        width: 100%;
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .responsive-table th,
+    .responsive-table td {
+        font-size: 13px;
+        padding: 6px;
+    }
+}
+
+

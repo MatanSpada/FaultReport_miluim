@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>דירה</title>
 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="mobile.css">
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -77,13 +80,14 @@
     <script src="config.js"></script>
 </head>
 <body>
+<div class="container">
 
 <header>
     <a href="index.html">דף הבית</a> |
     <a href="all_reports.html">כל התקלות</a>
 </header>
 
-<div class="card">
+<div class="card container">
     <h2 id="apt-title">דירה</h2>
 
     <p>
@@ -92,7 +96,7 @@
         </a>
     </p>
 
-    <div id="reports-container">טוען...</div>
+    <div id="reports-container" class="table-wrapper">טוען...</div>
 </div>
 
 <script>
@@ -148,7 +152,7 @@ function renderReports(reports) {
 
     let html = `
     <h3>דיווחים קיימים</h3>
-    <table>
+    <table class="responsive-table">
         <thead>
             <tr>
                 <th>#</th>
@@ -166,7 +170,7 @@ function renderReports(reports) {
         <tbody>
     `;
 
-    reports.forEach(r => {
+    reports.forEach((r, index) => {
         html += `
         <tr>
             <td>${index + 1}</td>
@@ -245,7 +249,7 @@ async function loadDashboard() {
 
 loadDashboard();
 </script>
-
+</div>
 </body>
 </html>
 

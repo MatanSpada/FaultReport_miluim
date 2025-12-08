@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>דיווח חדש – שלב 2</title>
 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="mobile.css">
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -45,7 +48,7 @@
     </style>
 </head>
 <body>
-
+<div class="container">
 <header class="card">
     <a href="index.html">דף הבית</a> |
     <a href="all_reports.html">כל התקלות</a>
@@ -145,7 +148,7 @@ document.getElementById("btn-back").addEventListener("click", () => {
     window.location.href = `report_step1.html?apartment_id=${aptId}`;
 });
 </script>
-
+</div>
 </body>
 </html>
 

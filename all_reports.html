@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>כל התקלות במערכת</title>
 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="mobile.css">
+    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -64,7 +67,7 @@
     </style>
     <script src="config.js"></script>
 </head>
-<body>
+<body> <div class="container">
 
 <header>
     <a href="index.html">דף הבית</a> |
@@ -73,7 +76,7 @@
 
 <h2 style="margin-bottom:20px;">כל התקלות במערכת</h2>
 
-<div style="margin-bottom:20px;">
+<div class="filter-bar" style="margin-bottom:20px;">
     <strong>סינון:</strong>
     <a href="all_reports.html">הכול</a> &nbsp;|&nbsp;
     <a href="all_reports.html?status=open">תקלות פתוחות</a> &nbsp;|&nbsp;
@@ -81,7 +84,7 @@
     <a href="all_reports.html?status=done">תקלות שטופלו</a>
 </div>
 
-<div id="reports-container">
+<div id="reports-container" class="table-wrapper">
     טוען...
 </div>
 
@@ -122,7 +125,7 @@ function renderReports(reports){
     }
 
     let html = `
-    <table>
+    <table class="responsive-table">
         <thead>
             <tr>
                 <th>מספר</th>
@@ -202,6 +205,7 @@ async function loadReports(){
 loadReports();
 </script>
 
+</div>
 </body>
 </html>
 

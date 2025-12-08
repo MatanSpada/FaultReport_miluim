@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>בחירת דירה</title>
 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="mobile.css">
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -39,13 +42,14 @@
     <script src="config.js"></script>
 </head>
 <body>
+<div class="container">
 
 <header>
     <a href="index.html">דף הבית</a> |
     <a href="all_reports.html">כל התקלות</a>
 </header>
 
-<div class="card">
+<div class="card container">
     <h2>בחר דירה</h2>
     <p>בחר דירה כדי להיכנס לדשבורד ולדווח על תקלות או חוסרים.</p>
 
@@ -78,7 +82,7 @@ async function loadApartments() {
 
 loadApartments();
 </script>
-
+</div>
 </body>
 </html>
 
