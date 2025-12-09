@@ -100,7 +100,7 @@
 const room = sessionStorage.getItem("report_room");
 const issue = sessionStorage.getItem("report_issue_type");
 
-if ((!room && !isZakif) || !issue) {
+if (!issue) {
     alert("שגיאה: לא מילאת את שלב 1");
     window.location.href = "report_step1.html";
 }

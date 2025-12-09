@@ -79,6 +79,16 @@
         <button class="btn-secondary" type="button" id="btn-back">חזרה לשלב 2</button>
 
         <button class="btn-primary" type="submit">שלח דיווח</button>
+
+        <button class="btn-secondary" type="button" id="btn-back">חזרה לשלב 2</button>
+
+        <button class="btn-primary" type="submit">שלח דיווח</button>
+
+        <div id="submit-loader" class="loading-box" style="display:none;">
+            שולח את הדיווח...
+            <div class="loader"></div>
+        </div>
+
     </form>
 </div>
 
@@ -92,13 +102,13 @@ const item        = sessionStorage.getItem("report_item");
 const description = sessionStorage.getItem("report_description");
 const priority    = sessionStorage.getItem("report_priority");
 
-if (!room || !issue || !item) {
+if (!issue || !item) {
     alert("שגיאה: חסרים נתונים משלבים קודמים.");
     window.location.href = "report_step1.html";
 }
 
 // הצגת סיכום
-document.getElementById("sum-room").textContent = room;
+document.getElementById("sum-room").textContent = room || "—";
 document.getElementById("sum-issue").textContent =
     issue === "broken" ? "משהו התקלקל" :
     issue === "missing" ? "משהו חסר" : "אחר";
@@ -119,6 +129,10 @@ document.getElementById("btn-back").addEventListener("click", () => {
 // -------------------------------
 const form = document.getElementById("step3-form");
 
+const submitBtn    = form.querySelector('.btn-primary[type="submit"]') || form.querySelector('.btn-primary');
+const submitLoader = document.getElementById("submit-loader");
+
+
 form.addEventListener("submit", async function(e) {
     e.preventDefault();
 
@@ -128,6 +142,13 @@ form.addEventListener("submit", async function(e) {
     if (!aptId) {
         alert("שגיאה: חסר apartment_id");
         return;
+    }
+
+    // מציגים ספינר וחוסמים את הכפתור
+    if (submitBtn && submitLoader)
+    {
+        submitBtn.disabled = true;
+        submitLoader.style.display = "block";
     }
 
     const payload = {
@@ -140,7 +161,8 @@ form.addEventListener("submit", async function(e) {
         status: "received"
     };
 
-    try {
+    try
+    {
         const response = await fetch(API_BASE + "?action=create_report", {
             method: "POST",
             body: JSON.stringify(payload)
@@ -148,28 +170,40 @@ form.addEventListener("submit", async function(e) {
 
         const data = await response.json();
 
-        if (!data.ok) {
+        if (!data.ok)
+        {
             alert("שגיאה בשליחת הדיווח: " + data.error);
             return;
         }
 
         alert("הדיווח נשלח בהצלחה!");
 
-        // ניקוי מידע
+        // ניקוי מידע מה-sessionStorage
         sessionStorage.removeItem("report_room");
         sessionStorage.removeItem("report_issue_type");
         sessionStorage.removeItem("report_item");
         sessionStorage.removeItem("report_description");
         sessionStorage.removeItem("report_priority");
 
-        // שליחה לדשבורד
+        // מעבר לדשבורד
         window.location.href = `dashboard.html?apartment_id=${aptId}`;
     }
-    catch (err) {
+    catch (err)
+    {
         alert("שגיאה בתקשורת עם השרת.");
         console.error(err);
     }
+    finally
+    {
+        // אם נשארנו בדף (לא הספיק ה-redirect) – מחביאים את הספינר
+        if (submitBtn && submitLoader)
+        {
+            submitBtn.disabled = false;
+            submitLoader.style.display = "none";
+        }
+    }
 });
+
 </script>
 </div>
 </body>
