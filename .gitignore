@@ -3,4 +3,4 @@ google_api/
 Notes.txt
 __pycache__/
 *.pyc
-
+*.txt
