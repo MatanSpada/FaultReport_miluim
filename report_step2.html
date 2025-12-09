@@ -97,10 +97,6 @@
 // -------------------------------
 // הצגת הנתונים שנשמרו משלב 1
 // -------------------------------
-const params = new URLSearchParams(window.location.search);
-const aptId = params.get("apartment_id");
-const isZakif = (aptId === "6" || aptId === "12");
-
 const room = sessionStorage.getItem("report_room");
 const issue = sessionStorage.getItem("report_issue_type");
 
@@ -109,7 +105,7 @@ if ((!room && !isZakif) || !issue) {
     window.location.href = "report_step1.html";
 }
 
-document.getElementById("room-display").textContent = room || "—";
+document.getElementById("room-display").textContent = room;
 document.getElementById("issue-display").textContent =
     issue === "broken" ? "משהו התקלקל" :
     issue === "missing" ? "משהו חסר" : "אחר";
@@ -135,6 +131,10 @@ form.addEventListener("submit", function(e) {
     sessionStorage.setItem("report_item", item);
     sessionStorage.setItem("report_description", description);
     sessionStorage.setItem("report_priority", priority);
+
+    // ❗ apartment_id מה־URL
+    const params = new URLSearchParams(window.location.search);
+    const aptId = params.get("apartment_id");
 
     window.location.href = `report_step3.html?apartment_id=${aptId}`;
 });

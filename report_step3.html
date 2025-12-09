@@ -86,23 +86,19 @@
 // -------------------------------
 // טוענים נתונים מה-sessionStorage
 // -------------------------------
-const params = new URLSearchParams(window.location.search);
-const aptId = params.get("apartment_id");
-const isZakif = (aptId === "6" || aptId === "12");
-
 const room        = sessionStorage.getItem("report_room");
 const issue       = sessionStorage.getItem("report_issue_type");
 const item        = sessionStorage.getItem("report_item");
 const description = sessionStorage.getItem("report_description");
 const priority    = sessionStorage.getItem("report_priority");
 
-if ((!room && !isZakif) || !issue || !item) {
+if (!room || !issue || !item) {
     alert("שגיאה: חסרים נתונים משלבים קודמים.");
     window.location.href = "report_step1.html";
 }
 
 // הצגת סיכום
-document.getElementById("sum-room").textContent = room || "—";
+document.getElementById("sum-room").textContent = room;
 document.getElementById("sum-issue").textContent =
     issue === "broken" ? "משהו התקלקל" :
     issue === "missing" ? "משהו חסר" : "אחר";
@@ -113,6 +109,8 @@ document.getElementById("sum-priority").textContent =
 
 // חוזרים לשלב 2
 document.getElementById("btn-back").addEventListener("click", () => {
+    const params = new URLSearchParams(window.location.search);
+    const aptId = params.get("apartment_id");
     window.location.href = `report_step2.html?apartment_id=${aptId}`;
 });
 
@@ -123,6 +121,9 @@ const form = document.getElementById("step3-form");
 
 form.addEventListener("submit", async function(e) {
     e.preventDefault();
+
+    const params = new URLSearchParams(window.location.search);
+    const aptId = params.get("apartment_id");
 
     if (!aptId) {
         alert("שגיאה: חסר apartment_id");
@@ -173,3 +174,4 @@ form.addEventListener("submit", async function(e) {
 </div>
 </body>
 </html>
+
