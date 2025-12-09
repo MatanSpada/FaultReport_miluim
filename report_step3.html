@@ -72,24 +72,21 @@
         <p><strong>דחיפות:</strong> <span id="sum-priority"></span></p>
     </div>
 
-    <form id="step3-form">
-        <label for="photo">תמונה (לא חובה)</label>
-        <input type="file" id="photo" accept="image/*">
+<form id="step3-form">
+    <label for="photo">תמונה (לא חובה)</label>
+    <input type="file" id="photo" accept="image/*">
 
-        <button class="btn-secondary" type="button" id="btn-back">חזרה לשלב 2</button>
+    <!-- כפתורים -->
+    <button class="btn-secondary" type="button" id="btn-back">חזרה לשלב 2</button>
+    <button class="btn-primary" type="submit">שלח דיווח</button>
 
-        <button class="btn-primary" type="submit">שלח דיווח</button>
+    <!-- ספינר -->
+    <div id="submit-loader" class="loading-box" style="display:none;">
+        שולח את הדיווח...
+        <div class="loader"></div>
+    </div>
+</form>
 
-        <button class="btn-secondary" type="button" id="btn-back">חזרה לשלב 2</button>
-
-        <button class="btn-primary" type="submit">שלח דיווח</button>
-
-        <div id="submit-loader" class="loading-box" style="display:none;">
-            שולח את הדיווח...
-            <div class="loader"></div>
-        </div>
-
-    </form>
 </div>
 
 <script>
