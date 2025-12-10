@@ -1,4 +1,4 @@
-window.API_BASE = "https://script.google.com/macros/s/AKfycbyRu7SyGxmDd2yQKG8VrfgA3nSKjbZYFLcQ60Dofo1KRPpvJYIWXXIgU-b_w7lIe2dtnw/exec";
+window.API_BASE = "https://script.google.com/macros/s/AKfycbwZlHntkvNIvd4JwAFn3RFbDr_Ih84qLGMPNwrUl0dwHvwkF8KWHflkTRkMPUYaHxjHlg/exec";
 
 window.APARTMENTS = {
     "1": "רותם",
