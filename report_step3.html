@@ -130,7 +130,7 @@ const submitBtn    = form.querySelector('.btn-primary[type="submit"]') || form.q
 const submitLoader = document.getElementById("submit-loader");
 
 
-form.addEventListener("submit", async function(e) {
+form.addEventListener("submit", function(e) {
     e.preventDefault();
 
     const params = new URLSearchParams(window.location.search);
@@ -148,58 +148,97 @@ form.addEventListener("submit", async function(e) {
         submitLoader.style.display = "block";
     }
 
-    const payload = {
-        apartment_id: aptId,
-        room: room,
-        item: item,
-        issue_type: issue,
-        description: description || "",
-        priority: priority,
-        status: "received"
+    const fileInput = document.getElementById("photo");
+    const file = fileInput && fileInput.files && fileInput.files[0];
+
+    // פונקציה פנימית ששולחת את הדיווח בפועל
+    async function sendReport(imageBase64)
+    {
+        const payload = {
+            apartment_id: aptId,
+            room: room,
+            item: item,
+            issue_type: issue,
+            description: description || "",
+            priority: priority,
+            status: "received",
+            image: imageBase64 || ""   // ← כאן התמונה (Base64) ל-Apps Script
+        };
+
+        try
+        {
+            const response = await fetch(API_BASE + "?action=create_report", {
+                method: "POST",
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (!data.ok)
+            {
+                alert("שגיאה בשליחת הדיווח: " + data.error);
+                return;
+            }
+
+            alert("הדיווח נשלח בהצלחה!");
+
+            // ניקוי מידע מה-sessionStorage
+            sessionStorage.removeItem("report_room");
+            sessionStorage.removeItem("report_issue_type");
+            sessionStorage.removeItem("report_item");
+            sessionStorage.removeItem("report_description");
+            sessionStorage.removeItem("report_priority");
+
+            window.location.href = `dashboard.html?apartment_id=${aptId}`;
+        }
+        catch (err)
+        {
+            alert("שגיאה בתקשורת עם השרת.");
+            console.error(err);
+        }
+        finally
+        {
+            if (submitBtn && submitLoader)
+            {
+                submitBtn.disabled = false;
+                submitLoader.style.display = "none";
+            }
+        }
+    }
+
+    // אם אין קובץ – שולחים מיד בלי תמונה
+    if (!file)
+    {
+        sendReport("");
+        return;
+    }
+
+    // אם יש קובץ – קוראים אותו כ-DataURL ומחלצים את ה-Base64
+    const reader = new FileReader();
+
+    reader.onload = function(ev) 
+    {
+        const result = ev.target.result || "";
+        // result נראה כמו: "data:image/jpeg;base64,AAAAA..."
+        const parts = result.split(",");
+        const base64Data = parts.length > 1 ? parts[1] : "";
+        sendReport(base64Data);
     };
 
-    try
+    reader.onerror = function(err)
     {
-        const response = await fetch(API_BASE + "?action=create_report", {
-            method: "POST",
-            body: JSON.stringify(payload)
-        });
-
-        const data = await response.json();
-
-        if (!data.ok)
-        {
-            alert("שגיאה בשליחת הדיווח: " + data.error);
-            return;
-        }
-
-        alert("הדיווח נשלח בהצלחה!");
-
-        // ניקוי מידע מה-sessionStorage
-        sessionStorage.removeItem("report_room");
-        sessionStorage.removeItem("report_issue_type");
-        sessionStorage.removeItem("report_item");
-        sessionStorage.removeItem("report_description");
-        sessionStorage.removeItem("report_priority");
-
-        // מעבר לדשבורד
-        window.location.href = `dashboard.html?apartment_id=${aptId}`;
-    }
-    catch (err)
-    {
-        alert("שגיאה בתקשורת עם השרת.");
-        console.error(err);
-    }
-    finally
-    {
-        // אם נשארנו בדף (לא הספיק ה-redirect) – מחביאים את הספינר
+        console.error("FileReader error:", err);
+        alert("שגיאה בקריאת קובץ התמונה.");
         if (submitBtn && submitLoader)
         {
             submitBtn.disabled = false;
             submitLoader.style.display = "none";
         }
-    }
+    };
+
+    reader.readAsDataURL(file);
 });
+
 
 </script>
 </div>
