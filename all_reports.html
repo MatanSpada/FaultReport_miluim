@@ -89,6 +89,18 @@
 
 <script>
 
+    function getDrivePreviewUrl(url)
+{
+    if (!url) return "";
+    const m =
+        url.match(/\/d\/([a-zA-Z0-9_-]+)/) ||
+        url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+
+    if (!m) return url;
+    return "https://drive.google.com/uc?export=view&id=" + m[1];
+}
+
+
 function getQueryParam(name){
     const p = new URLSearchParams(window.location.search);
     return p.get(name);
@@ -117,6 +129,17 @@ async function updateStatus(reportId, newStatus){
     }
 }
 
+function escapeHtml(s)
+{
+    return String(s || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+
 function renderReports(reports){
     if(!reports.length){
         document.getElementById("reports-container").innerHTML =
@@ -137,6 +160,7 @@ function renderReports(reports){
                 <th>תיאור</th>
                 <th>עדיפות</th>
                 <th>סטטוס</th>
+                <th>תמונה</th>
                 <th>פעולה</th>
             </tr>
         </thead>
@@ -155,6 +179,16 @@ function renderReports(reports){
             <td>${r.priority}</td>
 
             <td>${statusLabel(r.status)}</td>
+
+            <td>
+                ${r.image_url && !r.image_url.startsWith("ERROR:")
+                ? `<a href="${escapeHtml(r.image_url)}" target="_blank" rel="noopener">
+                <img src="${escapeHtml(getDrivePreviewUrl(r.image_url))}"
+                    style="width:60px;height:60px;object-fit:cover;">
+                </a>`
+                : '—'}
+            </td>
+
 
             <td>
                 <select id="sel-${r.id}">
