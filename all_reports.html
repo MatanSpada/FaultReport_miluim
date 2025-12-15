@@ -181,12 +181,11 @@ function renderReports(reports){
             <td>${statusLabel(r.status)}</td>
 
             <td>
-                ${r.image_url && !r.image_url.startsWith("ERROR:")
-                ? `<a href="${escapeHtml(r.image_url)}" target="_blank" rel="noopener">
-                <img src="${escapeHtml(getDrivePreviewUrl(r.image_url))}"
-                    style="width:60px;height:60px;object-fit:cover;">
-                </a>`
-                : '—'}
+            ${
+                r.image_url && !String(r.image_url).startsWith("ERROR:")
+                ? `<a href="${getDrivePreviewUrl(r.image_url)}" target="_blank" rel="noopener">צפייה בתמונה</a>`
+                : 'אין תמונה'
+            }
             </td>
 
 
