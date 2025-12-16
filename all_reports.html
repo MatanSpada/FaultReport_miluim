@@ -109,7 +109,6 @@ function doLogin()
 
     fetch(API_BASE + "?action=login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })
     })
     .then(r => r.json())
@@ -123,7 +122,12 @@ function doLogin()
         document.getElementById("loginBox").style.display = "none";
         document.getElementById("content").style.display = "block";
         loadReports();
+    })
+    .catch(err => {
+        document.getElementById("loginError").innerText = "שגיאת תקשורת (CORS/רשת)";
+        console.error(err);
     });
+
 }
 
 
