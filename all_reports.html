@@ -69,27 +69,66 @@
         <a href="all_reports.html">כל התקלות</a>
     </header>
 
-<h2 class="page-title">כל התקלות במערכת</h2>
+    <div id="loginBox" style="max-width:400px; background:#fff; padding:20px; margin:20px auto; border:1px solid #ddd;">
+        <h3>התחברות</h3>
 
-<div class="filter-bar">
-    <strong>סינון:</strong>
-    <a href="all_reports.html">הכול</a> &nbsp;|&nbsp;
-    <a href="all_reports.html?status=open">תקלות פתוחות</a> &nbsp;|&nbsp;
-    <a href="all_reports.html?status=in_progress">תקלות בטיפול</a> &nbsp;|&nbsp;
-    <a href="all_reports.html?status=done">תקלות שטופלו</a>
-</div>
+        <input id="loginUser" placeholder="שם משתמש" style="width:100%; padding:8px;"><br><br>
+        <input id="loginPass" type="password" placeholder="סיסמה" style="width:100%; padding:8px;"><br><br>
 
-<div id="reports-container">
-    <div class="loading-box">
-        <div class="loading-box">טוען...</div>
-        <div class="loader"></div>
+        <button onclick="doLogin()">התחבר</button>
+
+        <div id="loginError" style="color:red; margin-top:10px;"></div>
     </div>
-</div>
 
+    <div id="content" style="display:none;">
+
+        <h2 class="page-title">כל התקלות במערכת</h2>
+
+        <div class="filter-bar">
+            <strong>סינון:</strong>
+            <a href="all_reports.html">הכול</a> &nbsp;|&nbsp;
+            <a href="all_reports.html?status=open">תקלות פתוחות</a> &nbsp;|&nbsp;
+            <a href="all_reports.html?status=in_progress">תקלות בטיפול</a> &nbsp;|&nbsp;
+            <a href="all_reports.html?status=done">תקלות שטופלו</a>
+        </div>
+
+        <div id="reports-container">
+            <div class="loading-box">
+                <div class="loading-box">טוען...</div>
+                <div class="loader"></div>
+            </div>
+        </div>
+    </div>
 
 <script>
 
-    function getDrivePreviewUrl(url)
+function doLogin()
+{
+    const username = document.getElementById("loginUser").value;
+    const password = document.getElementById("loginPass").value;
+
+    fetch(API_BASE + "?action=login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (!data.ok) {
+            document.getElementById("loginError").innerText = "שם משתמש או סיסמה שגויים";
+            return;
+        }
+
+        sessionStorage.setItem("auth_token", data.token);
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("content").style.display = "block";
+        loadReports();
+    });
+}
+
+
+
+function getDrivePreviewUrl(url)
 {
     if (!url) return "";
     const m =
@@ -215,7 +254,11 @@ async function saveStatus(id){
 
 async function loadReports(){
     const status = getQueryParam("status");
-    let url = API_BASE + "?action=get_all_reports";
+    const token = sessionStorage.getItem("auth_token");
+    if (!token) return;
+
+    let url = API_BASE + "?action=get_all_reports&token=" + encodeURIComponent(token);
+
 
     if (status){
         url += "&status=" + encodeURIComponent(status);
@@ -236,7 +279,16 @@ async function loadReports(){
 }
 
 
-loadReports();
+window.onload = function ()
+{
+    const token = sessionStorage.getItem("auth_token");
+    if (token) {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("content").style.display = "block";
+        loadReports();
+    }
+};
+
 </script>
 
 </div>
