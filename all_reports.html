@@ -107,10 +107,14 @@ function doLogin()
     const username = document.getElementById("loginUser").value;
     const password = document.getElementById("loginPass").value;
 
-    fetch(API_BASE + "?action=login", {
-        method: "POST",
-        body: JSON.stringify({ username, password })
-    })
+    const url =
+        API_BASE +
+        "?action=login" +
+        "&username=" + encodeURIComponent(username) +
+        "&password=" + encodeURIComponent(password) +
+        "&_=" + Date.now(); // נגד cache
+
+    fetch(url)
     .then(r => r.json())
     .then(data => {
         if (!data.ok) {
@@ -127,7 +131,6 @@ function doLogin()
         document.getElementById("loginError").innerText = "שגיאת תקשורת (CORS/רשת)";
         console.error(err);
     });
-
 }
 
 
