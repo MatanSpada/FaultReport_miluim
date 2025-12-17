@@ -168,7 +168,6 @@ function renderReports(reports) {
                 <th>סטטוס</th>
                 <th>תיאור</th>
                 <th>תמונה</th>
-                <th>עדכון</th>
             </tr>
         </thead>
         <tbody>
@@ -196,16 +195,6 @@ function renderReports(reports) {
                         <img class="report-photo" src="static/uploads/${r.photo_filename}">
                     </a>
                 ` : "אין"}
-            </td>
-
-            <td>
-                <select id="sel-${r.id}">
-                    <option value="received"    ${r.status==="received"?"selected":""}>התקבל</option>
-                    <option value="in_progress" ${r.status==="in_progress"?"selected":""}>בטיפול</option>
-                    <option value="done"        ${r.status==="done"?"selected":""}>טופל</option>
-                </select>
-
-                <button class="btn-secondary" onclick="saveStatus(${r.id})">עדכן</button>
             </td>
         </tr>
         `;
