@@ -179,15 +179,14 @@ function renderReports(reports){
     reports.forEach((r, index) => {
         html += `
         <tr>
-            <td>${index + 1}</td>
-            <td>${getApartmentName(r.apartment_id)}</td>
-            <td>${r.created_at}</td>
-            <td>${r.room}</td>
-            <td>${r.issue_type}</td>
-            <td>${r.description}</td>
-            <td>${r.priority}</td>
-
-            <td>${statusLabel(r.status)}</td>
+            <td data-label="מספר">${index + 1}</td>
+            <td data-label="מתקן">${getApartmentName(r.apartment_id)}</td>
+            <td data-label="תאריך">${r.created_at}</td>
+            <td data-label="חדר">${r.room}</td>
+            <td data-label="קטגוריה">${r.issue_type}</td>
+            <td data-label="תיאור">${r.description}</td>
+            <td data-label="עדיפות">${r.priority}</td>
+            <td data-label="סטטוס">${statusLabel(r.status)}</td>
 
             <td>
             ${
@@ -205,7 +204,7 @@ function renderReports(reports){
                     <option value="done"        ${r.status==="done"?"selected":""}>טופל</option>
                 </select>
 
-                <button onclick="saveStatus(${r.id})">שמור</button>
+                <button onclick="saveStatus(${r.id}, this)">שמור</button>
             </td>
         </tr>
         `;
@@ -215,12 +214,34 @@ function renderReports(reports){
     document.getElementById("reports-container").innerHTML = html;
 }
 
-async function saveStatus(id){
+async function saveStatus(id, btn)
+{
     const sel = document.getElementById("sel-" + id);
     const newStatus = sel.value;
-    await updateStatus(id, newStatus);
-    alert("הסטטוס נשמר");
+
+    const oldText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "שומר…";
+
+    try {
+        await updateStatus(id, newStatus);
+
+        btn.textContent = "✓ נשמר";
+        btn.style.background = "#d4edda";
+
+        setTimeout(() => {
+            btn.textContent = oldText;
+            btn.style.background = "";
+            btn.disabled = false;
+        }, 1500);
+
+    } catch (err) {
+        btn.textContent = "שגיאה";
+        btn.style.background = "#f8d7da";
+        btn.disabled = false;
+    }
 }
+
 
 async function loadReports(password)
 {

@@ -92,30 +92,37 @@
 
     /* --- טבלאות --- */
 
-    .table-wrapper,
-    .responsive-table {
-        width: 100%;
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-    }
+    /* --- טבלאות – תיקון מובייל (שלב 1) --- */
 
-    table {
-        font-size: 14px;
-        width: 100%;
-        display: block;
-        overflow-x: auto;
-        border-spacing: 0;
-        -webkit-overflow-scrolling: touch;
-    }
-
+    table,
+    thead,
+    tbody,
     th,
-    td {
-        font-size: 13px;
-        padding: 6px;
-        white-space: nowrap;
+    tr {
+        display: block;
     }
+
+    thead {
+        display: none;
+    }
+
+    tr {
+        background: #fff;
+        margin-bottom: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 8px;
+    }
+
+    td {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 6px 4px;
+        border: none;
+        white-space: normal;
+    }
+
 
     tr {
         border-bottom: 1px solid #ddd;
