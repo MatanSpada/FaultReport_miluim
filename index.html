@@ -68,6 +68,11 @@
 
 <script>
 
+    const HIDDEN_APARTMENTS = [
+    "מלונית אגוז",
+    "מלונית ורד"
+];
+
 
 async function loadApartments() {
     const ul = document.getElementById("apt-list");
@@ -76,6 +81,11 @@ async function loadApartments() {
     ul.innerHTML = "";
 
     Object.entries(APARTMENTS).forEach(([id, name]) => {
+
+        if (HIDDEN_APARTMENTS.includes(name)) {
+            return;
+        }
+
         const li = document.createElement("li");
         const a = document.createElement("a");
 
@@ -85,6 +95,7 @@ async function loadApartments() {
         li.appendChild(a);
         ul.appendChild(li);
     });
+
 }
 
 

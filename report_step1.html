@@ -111,6 +111,21 @@
 const params = new URLSearchParams(window.location.search);
 const aptId = params.get("apartment_id");
 
+// דירות שצריכות "עמדת נוכח"
+// תיקון נקודתי - לא אידיאלי - בהמשך יש לשקול לייצר קובץ הגדרות לכל דירה
+const hasNogachStation = (aptId === "1" || aptId === "3");
+
+if (hasNogachStation) {
+    const roomSelect = document.getElementById("room");
+
+    const option = document.createElement("option");
+    option.value = "עמדת נוכח";
+    option.textContent = "עמדת נוכח";
+
+    roomSelect.appendChild(option);
+}
+
+
 // דירות זקיף
 const isZakif = (aptId === "6" || aptId === "12");
 
