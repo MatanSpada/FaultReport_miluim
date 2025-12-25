@@ -115,6 +115,30 @@ document.getElementById("issue-display").textContent =
 // -------------------------------
 const form = document.getElementById("step2-form");
 
+/* שחזור ערכים כשחוזרים אחורה משלב 3 */
+window.addEventListener("DOMContentLoaded", () =>
+{
+    const savedItem = sessionStorage.getItem("report_item");
+    const savedDesc = sessionStorage.getItem("report_description");
+    const savedPrio = sessionStorage.getItem("report_priority");
+
+    if (savedItem !== null) {
+        document.getElementById("item").value = savedItem;
+    }
+
+    if (savedDesc !== null) {
+        document.getElementById("description").value = savedDesc;
+    }
+
+    if (savedPrio) {
+        const radio = document.querySelector(`input[name="priority"][value="${savedPrio}"]`);
+        if (radio) {
+            radio.checked = true;
+        }
+    }
+});
+
+
 form.addEventListener("submit", function(e) {
     e.preventDefault();
 
