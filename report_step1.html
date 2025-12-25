@@ -111,6 +111,24 @@
 const params = new URLSearchParams(window.location.search);
 const aptId = params.get("apartment_id");
 
+/* אם עברנו לדירה אחרת – מתחילים דיווח נקי (לא לסחוב נתונים מדירה קודמת) */
+const lastAptId = sessionStorage.getItem("report_apartment_id");
+
+if (aptId && lastAptId && aptId !== lastAptId)
+{
+    sessionStorage.removeItem("report_room");
+    sessionStorage.removeItem("report_issue_type");
+    sessionStorage.removeItem("report_item");
+    sessionStorage.removeItem("report_description");
+    sessionStorage.removeItem("report_priority");
+}
+
+/* מעדכנים “דירה פעילה” */
+if (aptId)
+{
+    sessionStorage.setItem("report_apartment_id", aptId);
+}
+
 // דירות שצריכות "עמדת נוכח"
 // תיקון נקודתי - לא אידיאלי - בהמשך יש לשקול לייצר קובץ הגדרות לכל דירה
 const hasNogachStation = (aptId === "1" || aptId === "3");
