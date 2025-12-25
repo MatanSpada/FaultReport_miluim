@@ -71,7 +71,7 @@
 
         <label for="description">תיאור קצר</label>
         <textarea id="description" name="description" rows="3"
-                  placeholder="מה בדיוק הבעיה?"></textarea>
+                  placeholder="מה בדיוק הבעיה?" required></textarea>
 
         <label>דחיפות</label>
         <div>
@@ -122,10 +122,10 @@ form.addEventListener("submit", function(e) {
     const description = document.getElementById("description").value;
     const priority = form.querySelector("input[name='priority']:checked")?.value;
 
-    if (!item || !priority) {
-        alert("נא למלא את כל השדות החובה");
-        return;
-    }
+    if (!item.trim() || !description.trim() || !priority) {
+    alert("נא למלא את כל שדות החובה");
+    return;
+}
 
     // ❗ שמירה ב-sessionStorage
     sessionStorage.setItem("report_item", item);
