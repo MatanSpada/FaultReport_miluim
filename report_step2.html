@@ -118,6 +118,23 @@ const form = document.getElementById("step2-form");
 /* שחזור ערכים כשחוזרים אחורה משלב 3 */
 window.addEventListener("DOMContentLoaded", () =>
 {
+    /* אם עברנו לדירה אחרת – לא לשחזר נתונים ישנים */
+    const currentAptId = sessionStorage.getItem("report_apartment_id");
+    const lastAptIdForStep2 = sessionStorage.getItem("step2_apartment_id");
+
+    if (currentAptId && lastAptIdForStep2 && currentAptId !== lastAptIdForStep2)
+    {
+        sessionStorage.removeItem("report_item");
+        sessionStorage.removeItem("report_description");
+        sessionStorage.removeItem("report_priority");
+    }
+
+    /* מעדכנים “דירה אחרונה” של שלב 2 */
+    if (currentAptId)
+    {
+        sessionStorage.setItem("step2_apartment_id", currentAptId);
+    }
+
     const savedItem = sessionStorage.getItem("report_item");
     const savedDesc = sessionStorage.getItem("report_description");
     const savedPrio = sessionStorage.getItem("report_priority");
@@ -137,6 +154,7 @@ window.addEventListener("DOMContentLoaded", () =>
         }
     }
 });
+
 
 
 form.addEventListener("submit", function(e) {
