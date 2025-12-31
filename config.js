@@ -1,4 +1,4 @@
-window.API_BASE = "https://script.google.com/macros/s/AKfycbwgWxX4CwZvknEzAJXC11Co_jajIGTSHQiktU5XwJKK5-cPTrU7pdVl13JTL8onPO-mbw/exec";
+window.API_BASE = "https://script.google.com/macros/s/AKfycbxzBEASgHMN7dnknVMlUCo_fBuzmqmL05c_WurDssNp5RSQSqCkTujmruNJZBtrD5qW1g/exec";
                 
 window.APARTMENTS = {
     "1": "רותם",
@@ -12,7 +12,8 @@ window.APARTMENTS = {
     "9": "ורד",
     "10": "מלונית ורד",
     "11": "אקליפטוס",
-    "12": "זקיף אקליפטוס"
+    "12": "זקיף אקליפטוס",
+    "13": "זקיף סביון"
 };
 
 // פונקציית עזר שמחזירה שם מתקן
